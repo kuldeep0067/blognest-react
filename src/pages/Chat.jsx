@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import API_URL from "../api";
 
-const socket = io("http://127.0.0.1:5000", {
+const socket = io(API_URL, {
     transports: ["websocket", "polling"]
 });
 
