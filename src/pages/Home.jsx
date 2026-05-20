@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import API_URL from "../api";
+import Loader from "../components/Loader";
 
 import PostSkeleton from "../components/PostSkeleton";
 
@@ -151,6 +152,16 @@ function Home() {
                     </button>
                 ))}
             </div>
+ 
+           {!loading && posts.length === 0 && (
+                <div className="empty-state">
+                    <h2>No posts yet</h2>
+
+                    <p>
+                        Start writing your first blog 🚀
+                    </p>
+                </div>
+            )}
 
             <div className="post-grid">
                 {posts.map((post) => (
