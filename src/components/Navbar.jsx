@@ -154,9 +154,9 @@ function Navbar() {
                             Saved
                         </Link>
 
-                        {/* <Link to="/chat">
+                        <Link to="/chat">
                             Chat
-                        </Link> */}
+                        </Link>
  
                         {/* <Link to="/inbox">
                              Inbox

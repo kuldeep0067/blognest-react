@@ -56,11 +56,11 @@ function App() {
                     </ProtectedRoute>
                 } />
 
-                <Route path="/messages/:username" element={
+                {/* <Route path="/messages/:username" element={
                     <ProtectedRoute>
                         <DirectMessage />
                     </ProtectedRoute>
-                } />
+                } /> */}
 
                 <Route path="/admin" element={
                     <ProtectedRoute>
@@ -74,11 +74,11 @@ function App() {
                     </ProtectedRoute>
                 } />
 
-                <Route path="/inbox" element={
+                {/* <Route path="/inbox" element={
                     <ProtectedRoute>
                         <Inbox />
                     </ProtectedRoute>
-                } />
+                } /> */}
 
                 <Route
                         path="/saved-posts"
