@@ -97,6 +97,16 @@ function Home() {
            <title>BlogNest</title>
         </Helmet>
         <div className="container">
+            <div className="hero-section">
+                <h1>Welcome to BlogNest 🚀</h1>
+
+                <p>
+                     Write blogs, connect with people,
+                    and share your ideas with the world.
+                </p>
+            </div>
+                   
+
             <div className="home-top">
                 <h1>Latest Blogs</h1>
 
