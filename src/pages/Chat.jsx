@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import API_URL from "../api";
 
 const socket = io("http://127.0.0.1:5000");
 
@@ -9,7 +10,19 @@ function Chat() {
 
     const username = localStorage.getItem("username") || "Guest";
 
-    useEffect(() => {
+   useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        fetch(`${API_URL}/api/chat/messages`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setMessages(data.messages || []);
+            });
+
         socket.on("receive_message", (data) => {
             setMessages((prev) => [
                 ...prev,
@@ -47,6 +60,7 @@ function Chat() {
                         <div className="message-item" key={index}>
                             <strong>{msg.username}</strong>
                             <p>{msg.message}</p>
+                            <small>{msg.created_at}</small>
                         </div>
                     ))}
                 </div>
