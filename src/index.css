@@ -1122,3 +1122,39 @@ body.dark .ai-results {
 body.dark .empty-state h2 {
     color: white;
 }
+
+.message-item {
+    max-width: 70%;
+    background: #f3f4f6;
+    padding: 14px;
+    border-radius: 16px;
+    align-self: flex-start;
+}
+
+.my-message {
+    align-self: flex-end;
+    background: #ddd6fe;
+}
+
+.message-item strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #5b4dff;
+}
+
+.message-item p {
+    margin-bottom: 6px;
+}
+
+.message-item small {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+body.dark .message-item {
+    background: #1e293b;
+}
+
+body.dark .my-message {
+    background: #312e81;
+}

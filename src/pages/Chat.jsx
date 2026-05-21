@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import API_URL from "../api";
 
@@ -7,6 +7,7 @@ const socket = io("http://127.0.0.1:5000");
 function Chat() {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
+    const messagesEndRef = useRef(null);
 
     const username = localStorage.getItem("username") || "Guest";
 
@@ -35,6 +36,16 @@ function Chat() {
         };
     }, []);
 
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    function scrollToBottom() {
+        messagesEndRef.current?.scrollIntoView({
+            behavior: "smooth"
+        });
+    }
+
     function sendMessage(e) {
         e.preventDefault();
 
@@ -57,12 +68,25 @@ function Chat() {
 
                 <div className="messages-area">
                     {messages.map((msg, index) => (
-                        <div className="message-item" key={index}>
+                        <div
+                            className={
+                                msg.username === username
+                                    ? "message-item my-message"
+                                    : "message-item"
+                            }
+                            key={index}
+                        >
                             <strong>{msg.username}</strong>
+
                             <p>{msg.message}</p>
-                            <small>{msg.created_at}</small>
+
+                            <small>
+                                {msg.created_at}
+                            </small>
                         </div>
                     ))}
+
+                    <div ref={messagesEndRef}></div>
                 </div>
 
                 <form onSubmit={sendMessage} className="chat-form">
