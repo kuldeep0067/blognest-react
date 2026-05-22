@@ -7,6 +7,7 @@ const socket = io("http://127.0.0.1:5000");
 function Chat() {
     const [message, setMessage] = useState("");
     const [messages, setMessages] = useState([]);
+    const [onlineUsers, setOnlineUsers] = useState([]);
     const messagesEndRef = useRef(null);
 
     const username = localStorage.getItem("username") || "Guest";
@@ -24,6 +25,14 @@ function Chat() {
                 setMessages(data.messages || []);
             });
 
+        socket.emit("user_connected", {
+            username
+        });
+
+        socket.on("online_users", (users) => {
+            setOnlineUsers(users);
+        });
+
         socket.on("receive_message", (data) => {
             setMessages((prev) => [
                 ...prev,
@@ -33,6 +42,7 @@ function Chat() {
 
         return () => {
             socket.off("receive_message");
+            socket.off("online_users");
         };
     }, []);
 
@@ -65,6 +75,23 @@ function Chat() {
         <div className="container">
             <div className="chat-box">
                 <h1>Real-time Chat</h1>
+
+                <div className="online-users-box">
+                    <h3>
+                        Online Users ({onlineUsers.length})
+                    </h3>
+
+                    <div className="online-users-list">
+                        {onlineUsers.map((user, index) => (
+                            <span
+                                className="online-user"
+                                key={index}
+                            >
+                                🟢 {user}
+                            </span>
+                        ))}
+                    </div>
+                </div>
 
                 <div className="messages-area">
                     {messages.map((msg, index) => (

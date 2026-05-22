@@ -1158,3 +1158,30 @@ body.dark .message-item {
 body.dark .my-message {
     background: #312e81;
 }
+
+.online-users-box {
+    margin-top: 20px;
+    background: #f9fafb;
+    padding: 18px;
+    border-radius: 18px;
+}
+
+.online-users-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.online-user {
+    background: #dcfce7;
+    color: #166534;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+body.dark .online-users-box {
+    background: #1e293b;
+}
