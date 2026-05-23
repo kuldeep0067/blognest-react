@@ -12,87 +12,162 @@ const socket = io(
 );
 
 function Chat() {
-    const [message, setMessage] = useState("");
-    const [connected, setConnected] = useState(false);
-    const [sending, setSending] = useState(false);
-    const [messages, setMessages] = useState([]);
-    const [onlineUsers, setOnlineUsers] = useState([]);
-    const [typingUser, setTypingUser] = useState("");
-    const messagesEndRef = useRef(null);
 
-    const username = localStorage.getItem("username") || "Guest";
+    const [message, setMessage] =
+        useState("");
+
+    const [connected, setConnected] =
+        useState(false);
+
+    const [sending, setSending] =
+        useState(false);
+
+    const [messages, setMessages] =
+        useState([]);
+
+    const [onlineUsers, setOnlineUsers] =
+        useState([]);
+
+    const [typingUser, setTypingUser] =
+        useState("");
+
+    const messagesEndRef =
+        useRef(null);
+
+    const username =
+        localStorage.getItem(
+            "username"
+        ) || "Guest";
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
 
-        fetch(`${API_URL}/api/chat/messages`, {
-            headers: {
-                Authorization: `Bearer ${token}`
+        const token =
+            localStorage.getItem(
+                "token"
+            );
+
+        fetch(
+            `${API_URL}/api/chat/messages`,
+            {
+                headers: {
+                    Authorization:
+                        `Bearer ${token}`
+                }
             }
-        })
-            .then((res) => res.json())
+        )
+            .then((res) =>
+                res.json()
+            )
             .then((data) => {
 
                 const sortedMessages =
-                    (data.messages || []).sort(
+                    (
+                        data.messages || []
+                    ).sort(
                         (a, b) =>
-                            new Date(a.created_at) -
-                            new Date(b.created_at)
+                            new Date(
+                                a.created_at
+                            ) -
+                            new Date(
+                                b.created_at
+                            )
                     );
 
-                setMessages(sortedMessages);
+                const latestMessages =
+                    sortedMessages.slice(
+                        -50
+                    );
 
-            });
-        socket.on("online_users", (users) => {
-            setOnlineUsers(users);
-        });
-
-
-        socket.off("receive_message");
-
-        socket.on("receive_message", (data) => {
-
-            console.log(
-                "Message received:",
-                data
-            );
-
-           setMessages((prev) => {
-                const exists = prev.some(
-                    (msg) =>
-                        msg.message === data.message &&
-                        msg.username === data.username &&
-                        msg.created_at === data.created_at
+                setMessages(
+                    latestMessages
                 );
+            });
 
-                if (exists) return prev;
+        socket.on(
+            "online_users",
+            (users) => {
 
-                const updated = [
-                    ...prev,
+                setOnlineUsers(
+                    users
+                );
+            }
+        );
+
+        socket.off(
+            "receive_message"
+        );
+
+        socket.on(
+            "receive_message",
+            (data) => {
+
+                console.log(
+                    "Message received:",
                     data
-                ];
-
-                updated.sort(
-                   (a, b) =>
-                        new Date(a.created_at) -
-                        new Date(b.created_at)
                 );
 
-                return updated.slice(-50);
-            });
-        });
+                setMessages(
+                    (prev) => {
 
-        socket.on("connect", () => {
-            setConnected(true);
+                        const exists =
+                            prev.some(
+                                (msg) =>
+                                    msg.message ===
+                                        data.message &&
+                                    msg.username ===
+                                        data.username &&
+                                    msg.created_at ===
+                                        data.created_at
+                            );
 
-            socket.emit("user_connected", {
-                username
-            });
-        });
+                        if (exists)
+                            return prev;
 
-        socket.on("disconnect", () => {
-            setConnected(false);
-        });
+                        const updated = [
+                            ...prev,
+                            data
+                        ];
+
+                        updated.sort(
+                            (a, b) =>
+                                new Date(
+                                    a.created_at
+                                ) -
+                                new Date(
+                                    b.created_at
+                                )
+                        );
+
+                        return updated.slice(
+                            -50
+                        );
+                    }
+                );
+            }
+        );
+
+        socket.on(
+            "connect",
+            () => {
+
+                setConnected(true);
+
+                socket.emit(
+                    "user_connected",
+                    {
+                        username
+                    }
+                );
+            }
+        );
+
+        socket.on(
+            "disconnect",
+            () => {
+
+                setConnected(false);
+            }
+        );
 
         socket.on(
             "user_typing",
@@ -104,7 +179,9 @@ function Chat() {
 
                 setTimeout(() => {
 
-                setTypingUser("");
+                    setTypingUser(
+                        ""
+                    );
 
                 }, 1500);
             }
@@ -141,34 +218,63 @@ function Chat() {
         );
 
         return () => {
-            socket.off("receive_message");
-            socket.off("online_users");
-            socket.off("connect");
-            socket.off("disconnect");
-            socket.off("connect_error");
-            socket.off("error");
-            socket.off("user_typing");
+
+            socket.off(
+                "receive_message"
+            );
+
+            socket.off(
+                "online_users"
+            );
+
+            socket.off(
+                "connect"
+            );
+
+            socket.off(
+                "disconnect"
+            );
+
+            socket.off(
+                "connect_error"
+            );
+
+            socket.off(
+                "error"
+            );
+
+            socket.off(
+                "user_typing"
+            );
         };
+
     }, []);
 
     useEffect(() => {
+
         scrollToBottom();
+
     }, [messages]);
 
     function scrollToBottom() {
-        messagesEndRef.current?.scrollIntoView({
-            behavior: "smooth"
-        });
+
+        messagesEndRef.current?.scrollIntoView(
+            {
+                behavior: "smooth"
+            }
+        );
     }
 
     function sendMessage(e) {
+
         e.preventDefault();
 
         if (sending) return;
 
         if (!connected) return;
 
-        if (!message.trim()) return;
+        if (!message.trim())
+            return;
 
         setSending(true);
 
@@ -190,11 +296,15 @@ function Chat() {
                     response.success
                 ) {
 
-                    setSending(false);
+                    setSending(
+                        false
+                    );
 
                 } else {
 
-                    setSending(false);
+                    setSending(
+                        false
+                    );
 
                     alert(
                         "Message failed."
@@ -204,111 +314,199 @@ function Chat() {
         );
 
         setMessage("");
-
     }
 
     return (
+
         <div className="container">
+
             <div className="chat-box">
-                <h1>Real-time Chat</h1>
+
+                <h1>
+                    Real-time Chat
+                </h1>
 
                 <p>
                     Status:
-                    {connected ? " 🟢 Connected" : " 🔴 Disconnected"}
+                    {
+                        connected
+                            ? " 🟢 Connected"
+                            : " 🔴 Disconnected"
+                    }
                 </p>
-              
+
+                <p>
+                    Showing latest
+                    50 messages
+                </p>
+
                 <div className="online-users-box">
+
                     <h3>
-                        Online Users ({onlineUsers.length})
+                        Online Users (
+                        {
+                            onlineUsers.length
+                        }
+                        )
                     </h3>
 
                     <div className="online-users-list">
-                        {onlineUsers.map((user, index) => (
-                            <span
-                                className="online-user"
-                                key={user || index}
-                            >
-                                🟢 {user}
-                            </span>
-                        ))}
+
+                        {onlineUsers.map(
+                            (
+                                user,
+                                index
+                            ) => (
+                                <span
+                                    className="online-user"
+                                    key={
+                                        user ||
+                                        index
+                                    }
+                                >
+                                    🟢 {user}
+                                </span>
+                            )
+                        )}
+
                     </div>
+
                 </div>
 
                 {
                     typingUser && (
                         <p className="typing-text">
-                                {typingUser}
-                                {" "}
-                                is typing...
+
+                            {typingUser}
+                            {" "}
+                            is typing...
+
                         </p>
                     )
                 }
 
-                <div className="messages-area">
-                    {messages.map((msg, index) => (
-                        <div
-                            className={
-                                msg.username === username
-                                    ? "message-item my-message"
-                                    : "message-item"
+                <div className="chat-wrapper">
+
+                    <div className="chat-messages">
+
+                        {messages.map(
+                            (
+                                msg,
+                                index
+                            ) => {
+
+                                const prevMessage =
+                                    messages[
+                                        index - 1
+                                    ];
+
+                                const sameUser =
+                                    prevMessage &&
+                                    prevMessage.username ===
+                                        msg.username;
+
+                                return (
+
+                                    <div
+                                        className={
+                                            msg.username ===
+                                            username
+                                                ? "message-item my-message"
+                                                : "message-item"
+                                        }
+                                        key={
+                                            msg.id ||
+                                            index
+                                        }
+                                    >
+
+                                        {
+                                            !sameUser && (
+                                                <strong>
+                                                    {
+                                                        msg.username
+                                                    }
+                                                </strong>
+                                            )
+                                        }
+
+                                        <p>
+                                            {
+                                                msg.message
+                                            }
+                                        </p>
+
+                                        <small>
+                                            {
+                                                msg.created_at
+                                            }
+                                        </small>
+
+                                    </div>
+                                );
                             }
-                            key={msg.id || index}
+                        )}
+
+                        <div
+                            ref={
+                                messagesEndRef
+                            }
+                        ></div>
+
+                    </div>
+
+                    <form
+                        onSubmit={
+                            sendMessage
+                        }
+                        className="chat-input-area"
+                    >
+
+                        <input
+                            type="text"
+                            placeholder="Type message..."
+                            value={message}
+                            onChange={(e) => {
+
+                                setMessage(
+                                    e.target.value
+                                );
+
+                                socket.emit(
+                                    "typing",
+                                    {
+                                        username
+                                    }
+                                );
+                            }}
+                        />
+
+                        <button
+                            type="submit"
+                            disabled={
+                                !connected ||
+                                sending ||
+                                !message.trim()
+                            }
                         >
-                            <strong>{msg.username}</strong>
 
-                            <p>{msg.message}</p>
+                            {
+                                sending
+                                    ? "Sending..."
+                                    : "Send"
+                            }
 
-                            <small>
-                                {msg.created_at}
-                            </small>
-                        </div>
-                    ))}
+                        </button>
 
-                    <div ref={messagesEndRef}></div>
+                    </form>
+
                 </div>
 
-                <form onSubmit={sendMessage} className="chat-form">
-                    <input
-                        type="text"
-                        placeholder="Type message..."
-                        value={message}
-                        onChange={(e) => {
-
-                            setMessage(
-                                e.target.value
-                            );
-
-                            socket.emit(
-                                "typing",
-                                {
-                                    username
-                                }
-                            );
-                        }}
-
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                sendMessage(e);
-                            }
-                        }}
-                    />
-
-                    <button
-                        type="submit"
-                        disabled={
-                            !connected ||
-                            sending ||
-                            !message.trim()
-                        }
-                    >
-                        {sending
-                            ? "Sending..."
-                            : "Send"}
-                    </button>
-                </form>
             </div>
+
         </div>
     );
 }
 
 export default Chat;
+
