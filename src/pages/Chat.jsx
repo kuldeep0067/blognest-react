@@ -2,10 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import API_URL from "../api";
 
-const socket = io("http://127.0.0.1:5000");
+const socket = io(
+    "http://127.0.0.1:5000",
+    {
+        transports: ["websocket"],
+        reconnection: true
+    }
+);
 
 function Chat() {
     const [message, setMessage] = useState("");
+    const [connected, setConnected] = useState(false);
     const [messages, setMessages] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const messagesEndRef = useRef(null);
@@ -25,10 +32,6 @@ function Chat() {
                 setMessages(data.messages || []);
             });
 
-        socket.emit("user_connected", {
-            username
-        });
-
         socket.on("online_users", (users) => {
             setOnlineUsers(users);
         });
@@ -40,9 +43,23 @@ function Chat() {
             ]);
         });
 
+        socket.on("connect", () => {
+            setConnected(true);
+
+            socket.emit("user_connected", {
+                username
+            });
+        });
+
+        socket.on("disconnect", () => {
+            setConnected(false);
+        });
+
         return () => {
             socket.off("receive_message");
             socket.off("online_users");
+            socket.off("connect");
+            socket.off("disconnect");
         };
     }, []);
 
@@ -58,6 +75,10 @@ function Chat() {
 
     function sendMessage(e) {
         e.preventDefault();
+
+        if (!connected) {
+            return;
+        }
 
         if (!message.trim()) {
             return;
@@ -76,6 +97,11 @@ function Chat() {
             <div className="chat-box">
                 <h1>Real-time Chat</h1>
 
+                <p>
+                    Status:
+                    {connected ? " 🟢 Connected" : " 🔴 Disconnected"}
+                </p>
+              
                 <div className="online-users-box">
                     <h3>
                         Online Users ({onlineUsers.length})
