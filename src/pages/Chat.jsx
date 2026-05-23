@@ -17,11 +17,12 @@ function Chat() {
     const [sending, setSending] = useState(false);
     const [messages, setMessages] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
+    const [typingUser, setTypingUser] = useState("");
     const messagesEndRef = useRef(null);
 
     const username = localStorage.getItem("username") || "Guest";
 
-   useEffect(() => {
+    useEffect(() => {
         const token = localStorage.getItem("token");
 
         fetch(`${API_URL}/api/chat/messages`, {
@@ -94,6 +95,22 @@ function Chat() {
         });
 
         socket.on(
+            "user_typing",
+            (data) => {
+
+                setTypingUser(
+                    data.username
+                );
+
+                setTimeout(() => {
+
+                setTypingUser("");
+
+                }, 1500);
+            }
+        );
+
+        socket.on(
             "connect_error",
             (err) => {
 
@@ -130,6 +147,7 @@ function Chat() {
             socket.off("disconnect");
             socket.off("connect_error");
             socket.off("error");
+            socket.off("user_typing");
         };
     }, []);
 
@@ -216,6 +234,16 @@ function Chat() {
                     </div>
                 </div>
 
+                {
+                    typingUser && (
+                        <p className="typing-text">
+                                {typingUser}
+                                {" "}
+                                is typing...
+                        </p>
+                    )
+                }
+
                 <div className="messages-area">
                     {messages.map((msg, index) => (
                         <div
@@ -244,7 +272,19 @@ function Chat() {
                         type="text"
                         placeholder="Type message..."
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        onChange={(e) => {
+
+                            setMessage(
+                                e.target.value
+                            );
+
+                            socket.emit(
+                                "typing",
+                                {
+                                    username
+                                }
+                            );
+                        }}
 
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {

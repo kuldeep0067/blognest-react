@@ -1198,3 +1198,35 @@ body.dark .typing-text {
 
     color: #9ca3af;
 }
+.message-item {
+
+    margin-bottom: 4px;
+
+    padding: 12px 16px;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 2px 8px
+        rgba(
+            0,
+            0,
+            0,
+            0.05
+        );
+}
+
+.message-item strong {
+
+    display: block;
+
+    margin-bottom: 8px;
+}
+.my-message {
+
+    border-bottom-right-radius: 6px;
+}
+.message-item:not(.my-message) {
+
+    border-bottom-left-radius: 6px;
+}
