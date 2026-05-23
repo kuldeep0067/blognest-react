@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import { io } from "socket.io-client";
 import API_URL from "../api";
 
@@ -92,11 +93,43 @@ function Chat() {
             setConnected(false);
         });
 
+        socket.on(
+            "connect_error",
+            (err) => {
+
+                console.log(
+                    "Socket error:",
+                    err.message
+                );
+
+                toast.error(
+                    "Chat connection failed."
+                );
+            }
+        );
+
+        socket.on(
+            "error",
+            (err) => {
+
+                console.log(
+                    "Socket generic error:",
+                    err
+                );
+
+                toast.error(
+                    "Socket error occurred."
+                );
+            }
+        );
+
         return () => {
             socket.off("receive_message");
             socket.off("online_users");
             socket.off("connect");
             socket.off("disconnect");
+            socket.off("connect_error");
+            socket.off("error");
         };
     }, []);
 
@@ -175,7 +208,7 @@ function Chat() {
                         {onlineUsers.map((user, index) => (
                             <span
                                 className="online-user"
-                                key={msg.id || index}
+                                key={user || index}
                             >
                                 🟢 {user}
                             </span>

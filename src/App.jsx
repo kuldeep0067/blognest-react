@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-
+import { ToastContainer } from "react-toastify";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
@@ -121,6 +121,7 @@ function App() {
             </Routes>
 
             <Footer />
+            <ToastContainer />
         </>
     );
 }
