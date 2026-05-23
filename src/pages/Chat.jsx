@@ -36,11 +36,28 @@ function Chat() {
             setOnlineUsers(users);
         });
 
+
+        socket.off("receive_message");
+
         socket.on("receive_message", (data) => {
-            setMessages((prev) => [
-                ...prev,
+
+            console.log(
+                "Message received:",
                 data
-            ]);
+            );
+
+           setMessages((prev) => {
+                const exists = prev.some(
+                    (msg) =>
+                        msg.message === data.message &&
+                        msg.username === data.username &&
+                        msg.created_at === data.created_at
+                );
+
+                if (exists) return prev;
+
+                return [...prev, data];
+            });
         });
 
         socket.on("connect", () => {
@@ -83,6 +100,8 @@ function Chat() {
         if (!message.trim()) {
             return;
         }
+
+        console.log("Sending message:", message);
 
         socket.emit("send_message", {
             username,
