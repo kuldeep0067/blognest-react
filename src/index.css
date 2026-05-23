@@ -1185,3 +1185,16 @@ body.dark .my-message {
 body.dark .online-users-box {
     background: #1e293b;
 }
+.typing-text {
+    font-size: 13px;
+
+    color: #6b7280;
+
+    margin-bottom: 8px;
+
+    font-style: italic;
+}
+body.dark .typing-text {
+
+    color: #9ca3af;
+}
