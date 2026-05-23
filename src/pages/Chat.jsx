@@ -30,9 +30,17 @@ function Chat() {
         })
             .then((res) => res.json())
             .then((data) => {
-                setMessages(data.messages || []);
-            });
 
+                const sortedMessages =
+                    (data.messages || []).sort(
+                        (a, b) =>
+                            new Date(a.created_at) -
+                            new Date(b.created_at)
+                    );
+
+                setMessages(sortedMessages);
+
+            });
         socket.on("online_users", (users) => {
             setOnlineUsers(users);
         });
@@ -57,7 +65,18 @@ function Chat() {
 
                 if (exists) return prev;
 
-                return [...prev, data];
+                const updated = [
+                    ...prev,
+                    data
+                ];
+
+                updated.sort(
+                   (a, b) =>
+                        new Date(a.created_at) -
+                        new Date(b.created_at)
+                );
+
+                return updated.slice(-50);
             });
         });
 
@@ -112,14 +131,29 @@ function Chat() {
             {
                 username,
                 message
+            },
+            (response) => {
+
+                if (
+                    response &&
+                    response.success
+                ) {
+
+                    setSending(false);
+
+                } else {
+
+                    setSending(false);
+
+                    alert(
+                        "Message failed."
+                    );
+                }
             }
         );
 
         setMessage("");
 
-        setTimeout(() => {
-            setSending(false);
-        }, 300);
     }
 
     return (
@@ -141,7 +175,7 @@ function Chat() {
                         {onlineUsers.map((user, index) => (
                             <span
                                 className="online-user"
-                                key={index}
+                                key={msg.id || index}
                             >
                                 🟢 {user}
                             </span>
@@ -157,7 +191,7 @@ function Chat() {
                                     ? "message-item my-message"
                                     : "message-item"
                             }
-                            key={index}
+                            key={msg.id || index}
                         >
                             <strong>{msg.username}</strong>
 
