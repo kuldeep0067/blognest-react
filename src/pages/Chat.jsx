@@ -13,6 +13,7 @@ const socket = io(
 function Chat() {
     const [message, setMessage] = useState("");
     const [connected, setConnected] = useState(false);
+    const [sending, setSending] = useState(false);
     const [messages, setMessages] = useState([]);
     const [onlineUsers, setOnlineUsers] = useState([]);
     const messagesEndRef = useRef(null);
@@ -93,22 +94,32 @@ function Chat() {
     function sendMessage(e) {
         e.preventDefault();
 
-        if (!connected) {
-            return;
-        }
+        if (sending) return;
 
-        if (!message.trim()) {
-            return;
-        }
+        if (!connected) return;
 
-        console.log("Sending message:", message);
+        if (!message.trim()) return;
 
-        socket.emit("send_message", {
-            username,
+        setSending(true);
+
+        console.log(
+            "Sending message:",
             message
-        });
+        );
+
+        socket.emit(
+            "send_message",
+            {
+                username,
+                message
+            }
+        );
 
         setMessage("");
+
+        setTimeout(() => {
+            setSending(false);
+        }, 300);
     }
 
     return (
@@ -167,10 +178,25 @@ function Chat() {
                         placeholder="Type message..."
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
+
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                sendMessage(e);
+                            }
+                        }}
                     />
 
-                    <button type="submit">
-                        Send
+                    <button
+                        type="submit"
+                        disabled={
+                            !connected ||
+                            sending ||
+                            !message.trim()
+                        }
+                    >
+                        {sending
+                            ? "Sending..."
+                            : "Send"}
                     </button>
                 </form>
             </div>
