@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Bell } from "lucide-react";
 import API_URL from "../api";
 
 function Navbar() {
@@ -100,7 +101,6 @@ function Navbar() {
         localStorage.removeItem("username");
         localStorage.removeItem("is_admin");
 
-
         setToken(null);
         setUsername(null);
         setUnreadCount(0);
@@ -136,7 +136,7 @@ function Navbar() {
 
                         {isAdmin && (
                             <Link to="/admin">
-                                 Admin
+                                Admin
                             </Link>
                         )}
 
@@ -157,22 +157,17 @@ function Navbar() {
                         <Link to="/chat">
                             Chat
                         </Link>
- 
-                        {/* <Link to="/inbox">
-                             Inbox
-                        </Link> */}
 
-                        <Link
-                            to="/notifications"
-                            className="notification-link"
-                        >
-                            Notifications
-
-                            {unreadCount > 0 && (
-                                <span className="notification-badge">
-                                    {unreadCount}
-                                </span>
-                            )}
+                        {/* 👇 Purane text link ko hatakar beautiful Bell icon custom wrapper ke sath set kiya */}
+                        <Link to="/notifications" className="notif-bell-wrapper">
+                            <div className="notif-bell">
+                                <Bell size={22} />
+                                {unreadCount > 0 && (
+                                    <span className="notif-count">
+                                        {unreadCount}
+                                    </span>
+                                )}
+                            </div>
                         </Link>
 
                         <span className="nav-user">
@@ -185,9 +180,7 @@ function Navbar() {
                             }
                             className="theme-btn"
                         >
-                            {darkMode
-                                ? "☀️ Light"
-                                : "🌙 Dark"}
+                            {darkMode ? "☀️ Light" : "🌙 Dark"}
                         </button>
 
                         <button
@@ -205,9 +198,7 @@ function Navbar() {
                             }
                             className="theme-btn"
                         >
-                            {darkMode
-                                ? "☀️ Light"
-                                : "🌙 Dark"}
+                            {darkMode ? "☀️ Light" : "🌙 Dark"}
                         </button>
 
                         <Link to="/login">
